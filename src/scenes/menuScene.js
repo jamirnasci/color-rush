@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import { banner } from '../ads/banner'
+import { AdMob } from '@capacitor-community/admob'
 
 export class MenuScene extends Phaser.Scene {
     constructor() {
@@ -11,7 +13,8 @@ export class MenuScene extends Phaser.Scene {
         this.load.image('purple-bg', 'assets/img/bg/purple-bg.jpg')
         this.load.image('exit-btn', 'assets/img/menu/exit-btn.png')
     }
-    create() {
+    async create() {
+        await banner()
         const width = this.scale.width
         const height = this.scale.height
         this.add.tileSprite(0, 0, 2000, 2000, 'purple-bg')
@@ -50,6 +53,7 @@ export class MenuScene extends Phaser.Scene {
             .setInteractive()
             .setScale(0.5)
             .on('pointerdown', () => {
+                AdMob.removeBanner()
                 this.scene.start('GameScene')
             })
 

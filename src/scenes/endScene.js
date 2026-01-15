@@ -1,3 +1,5 @@
+import { interstitial } from "../ads/interstitial"
+
 export class EndScene extends Phaser.Scene {
     constructor() {
         super({ key: 'EndScene' })
@@ -17,7 +19,8 @@ export class EndScene extends Phaser.Scene {
         this.load.image('play-again-btn', 'assets/img/menu/score.png')
         this.load.image('purple-bg', 'assets/img/bg/purple-bg.jpg')
     }
-    create() {
+    async create() {
+        await interstitial()
         const width = this.scale.width
         const height = this.scale.height
 

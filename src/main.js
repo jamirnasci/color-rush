@@ -3,6 +3,11 @@ import { MenuScene } from './scenes/menuScene'
 import { GameScene } from './scenes/gameScene'
 import { EndScene } from './scenes/endScene'
 import { SettingsScene } from './scenes/settingsScene'
+import { initialize } from './ads/permission'
+
+(async function(){
+  await initialize()
+})()
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
