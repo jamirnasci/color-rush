@@ -9,9 +9,13 @@ const game = new Phaser.Game({
   parent: 'game-container',
   width: window.innerWidth,
   height: window.innerHeight,
+  resolution: window.devicePixelRatio || 1,
   scale: {
-    mode: Phaser.Scale.RESIZE,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  render:{
+    antialias: true
   },
   autoCenter: Phaser.Scale.CENTER_BOTH,
   scene: [MenuScene, GameScene, EndScene, SettingsScene],

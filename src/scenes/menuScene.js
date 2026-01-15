@@ -23,16 +23,18 @@ export class MenuScene extends Phaser.Scene {
         if (storageRecord) {
             this.recordTxt = this.add.text(width / 2, height - 200, 'Record', {
                 fontSize: 40,
-                color: '#e0a500ff',
+                color: '#ffbb00ff',
                 fontStyle: 'bold',
-                padding: 10
+                padding: 10,
+                fontFamily: 'Arial'
             }).setStroke('black', 3)
             this.recordTxt.x -= this.recordTxt.width / 2
             this.recordValue = this.add.text(width / 2, height - 150, storageRecord, {
                 fontSize: 40,
-                color: '#e0a500ff',
+                color: '#ffbb00ff',
                 fontStyle: 'bold',
-                padding: 10
+                padding: 10,
+                fontFamily: 'Arial'
             }).setStroke('black', 3)
             this.recordValue.x -= this.recordValue.width / 2
         }

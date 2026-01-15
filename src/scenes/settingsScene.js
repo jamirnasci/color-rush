@@ -21,7 +21,7 @@ export class SettingsScene extends Phaser.Scene {
             .setAlpha(0.8)
             .setOrigin(0)
 
-        const rectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x006600FF)
+        const rectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x00330066)
             .setRounded(20)
 
         this.soundTxt = this.add.image(0, -140, 'sound-txt')
@@ -35,7 +35,7 @@ export class SettingsScene extends Phaser.Scene {
         const storageSoundPref = localStorage.getItem('sound') || 'sound-on'
         this.soundBtn = this.add.image(0, -50, storageSoundPref)
         this.soundBtn.setInteractive()
-        this.soundBtn.setScale(0.2)
+        this.soundBtn.setScale(0.15)
         this.soundBtn.on('pointerdown', () => {
             this.sound.mute = !this.sound.mute
             const value = localStorage.getItem('sound') == 'sound-on' ? 'sound-off' : 'sound-on'

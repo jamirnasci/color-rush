@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import { Obstacle } from '../sprites/obstacle'
 import { Player } from '../sprites/player'
+import { Life } from '../sprites/life'
 
 export class GameScene extends Phaser.Scene {
     constructor() {
@@ -20,10 +21,13 @@ export class GameScene extends Phaser.Scene {
         this.load.image('pause-txt', 'assets/img/hud/pause-txt.png')
 
         this.load.image('glass-particle', 'assets/img/particles/glass.jpg')
+        this.load.image('life-item', 'assets/img/items/life.png')
 
+        this.load.audio('game-song', 'assets/audio/game-song.mp3')
         this.load.audio('glass-audio-1', 'assets/audio/glass-audio-1.mp3')
         this.load.audio('glass-audio-2', 'assets/audio/glass-audio-2.mp3')
         this.load.audio('glass-audio-3', 'assets/audio/glass-audio-3.mp3')
+        this.load.audio('loss-audio', 'assets/audio/loss-audio.mp3')
 
     }
     create() {
@@ -33,13 +37,19 @@ export class GameScene extends Phaser.Scene {
         const storagedLevel = localStorage.getItem('level')
         this.obstacleDelay = storagedLevel == 'easy' ? 1000 :
             storagedLevel == 'normal' ? 700 :
-            storagedLevel == 'hard' ? 500 : 1000
+                storagedLevel == 'hard' ? 500 : 1000
 
         this.lifes = 3
         this.add.tileSprite(0, 0, 2000, 2000, 'purple-bg')
             .setOrigin(0)
+
+        this.gameSong = this.sound.add('game-song', {
+            volume: 0.3,
+            loop: true
+        })
+        this.gameSong.play()
         /*pause menu*/
-        this.pauseRectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x006600FF)
+        this.pauseRectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x00330066)
             .setDepth(999)
             .setVisible(false)
             .setRounded(20)
@@ -64,6 +74,17 @@ export class GameScene extends Phaser.Scene {
             callback: this.generateObstacle,
             callbackScope: this,
             loop: true
+        })
+        this.lifeEvent = this.time.addEvent({
+            delay: 5000,
+            callback: this.spawnLife,
+            callbackScope: this,
+            loop: true
+        })
+        this.lifeGroup = this.physics.add.group({
+            classType: Life,
+            max: 10,
+            defaultKey: 'life-item',
         })
         this.player = new Player(this, window.innerWidth / 2, window.innerHeight - 200, 'player')
             .setOrigin(0)
@@ -105,6 +126,7 @@ export class GameScene extends Phaser.Scene {
         this.menuBtn = this.add.image(0, 70, 'menu-btn')
             .setInteractive()
             .on('pointerdown', () => {
+                this.gameSong.destroy()
                 this.scene.start('MenuScene')
             })
         this.pauseBtnsContainer = this.add.container(width / 2, height / 2)
@@ -130,13 +152,14 @@ export class GameScene extends Phaser.Scene {
             this.menuBtn
         ])
         this.physics.add.overlap(this.player, this.obstacleGroup, this.playerObstacleCollision, null, this)
+        this.physics.add.overlap(this.player, this.lifeGroup, this.addLife, null, this)
         this.lifeHud = this.add.text(10, 10, '❤️❤️❤️', {
             fontSize: 30,
             padding: 10
         })
         this.scoreHud = this.add.text(width / 2, 10, '0', {
             fontSize: 30,
-            color: '#e0a500ff',
+            color: '#ffbb00ff',
             fontStyle: 'bold',
             padding: 10
         }).setStroke('black', 3)
@@ -168,11 +191,9 @@ export class GameScene extends Phaser.Scene {
                 .explode(50)
             this.scoreHud.setText(Number(this.scoreHud.text) + 10)
         } else {
-            this.lifeHud.setText('')
-            this.lifes -= 1
-            for (let i = 0; i < this.lifes; i++) {
-                this.lifeHud.setText(this.lifeHud.text + '❤️')
-            }
+            this.sound.play('loss-audio', { loop: false })            
+            this.lifes -= 1            
+            this.updateLifeHud()
             if (this.lifes <= 0) {
                 this.explosionEmitter
                     .setPosition(player.x, player.y)
@@ -190,6 +211,8 @@ export class GameScene extends Phaser.Scene {
     togglePauseMenu() {
         this.pauseRectangle.setVisible(!this.pauseRectangle.visible)
         this.obstaclesEvent.paused = !this.obstaclesEvent.paused
+        this.lifeEvent.paused = !this.lifeEvent.paused
+        
         if (this.physics.world.isPaused) {
             this.physics.world.resume()
         } else {
@@ -211,8 +234,35 @@ export class GameScene extends Phaser.Scene {
 
     }
     endGame() {
+        this.gameSong.destroy()
         this.scene.start('EndScene', {
             score: this.scoreHud.text
         })
+    }
+    spawnLife() {
+        const x = Math.floor(Math.random() * window.innerWidth - 20)
+        const y = -20
+
+        /** @type {Life} */
+        const life = this.lifeGroup.get(x, y)
+        life.spawn()
+    }
+    /**
+     * 
+     * @param {Player} player 
+     * @param {Life} life 
+     */
+    addLife(player, life) {
+        life.kill()
+        if (this.lifes < 3) {            
+            this.lifes += 1
+            this.updateLifeHud()
+        }
+    }
+    updateLifeHud() {
+        this.lifeHud.setText('')
+        for (let i = 0; i < this.lifes; i++) {
+            this.lifeHud.setText(this.lifeHud.text + '❤️')
+        }
     }
 }

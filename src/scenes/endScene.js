@@ -25,7 +25,7 @@ export class EndScene extends Phaser.Scene {
             .setAlpha(0.8)
             .setOrigin(0)
 
-        const rectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x006600FF)
+        const rectangle = this.add.rectangle(width / 2, height / 2, 350, 400, 0x00330066)
             .setRounded(20)
 
         this.btnsContainer = this.add.container(width / 2, height / 2)
@@ -33,9 +33,10 @@ export class EndScene extends Phaser.Scene {
         this.scoreTxt = this.add.image(0, -140, 'score-txt')
         this.scoreValue = this.add.text(0, -110, this.currentScore, {
             fontSize: 40,
-            color: '#e0a500ff',
+            color: '#ffbb00ff',
             fontStyle: 'bold',
-            padding: 10
+            padding: 10,
+            fontFamily: 'Arial'
         }).setStroke('black', 3)
         this.scoreValue.x -= this.scoreValue.width / 2
 
